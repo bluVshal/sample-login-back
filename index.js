@@ -33,7 +33,6 @@ app.post("/signup", jsonParser, (req, res) => {
         if(err){
             console.log(err);
         }       
-        console.log(data[0].userId);
         latestUserID = parseInt(data[0].userId) + 1;
 
         const values = [
@@ -52,6 +51,20 @@ app.post("/signup", jsonParser, (req, res) => {
             }
             return res.json(data);
         });
+    });
+});
+
+app.post("/login", jsonParser, (req, res) => {
+    const sqlSearch = `SELECT userId FROM login WHERE email = ? AND password = ?`;
+    const values = [
+        req.body.email,
+        req.body.password,
+    ];
+    db.query(sqlSearch, values, (err, data) => {
+        if(err){
+            return res.json(err);
+        }
+        return res.json(data);
     });
 });
 
