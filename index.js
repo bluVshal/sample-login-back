@@ -3,22 +3,28 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const moment = require('moment');
 const bodyParser = require('body-parser');
-
 const app = express();
+
 app.use(cors());
+require('dotenv').config();
+
+const db = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE
+});
+
+db.connect((err) => {
+    if(err) throw err;
+    console.log('Connected to MySQL DB');
+});
 
 // create application/json parser
 var jsonParser = bodyParser.json();
 
 // create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
-
-const db = mysql.createConnection({
-    host:"localhost",
-    user: "root",
-    password: "jq88esfx",
-    database: "sample_signup"
-});
 
 app.get("/", (req, res) => {
     res.send("Listening");
@@ -68,6 +74,6 @@ app.post("/login", jsonParser, (req, res) => {
     });
 });
 
-app.listen(65319, () => {
+app.listen(process.env.PORT, () => {
     console.log("Listening");
 });
