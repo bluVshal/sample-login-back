@@ -62,15 +62,23 @@ app.post("/signup", jsonParser, (req, res) => {
 
 app.post("/login", jsonParser, (req, res) => {
     const sqlSearch = `SELECT userId FROM login WHERE email = ? AND password = ?`;
+    const sqlUpdate = `UPDATE login SET lastModified = ? WHERE userId = ?`;
     const values = [
         req.body.email,
         req.body.password,
     ];
+    var updateValues = [];
     db.query(sqlSearch, values, (err, data) => {
         if(err){
-            return res.json(err);
+            return res.json({"message":"Could not find user"});
         }
-        return res.json(data);
+        updateValues = [moment().format('YYYY-MM-DD HH:mm:ss'), data[0].userId];
+        db.query(sqlUpdate, updateValues, (err, data) => {
+           if(err){
+                return res.json({"message":"Update Error"});
+            }
+        });
+        return res.json({"message":"Login Successful"});
     });
 });
 
